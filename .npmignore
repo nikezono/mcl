@@ -1,0 +1,4 @@
+*.coffee
+node_modules
+.gitignore
+.travis.yml

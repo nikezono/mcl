@@ -1,0 +1,27 @@
+{
+  "name": "markov-cluster",
+  "version": "1.0.0",
+  "description": "clustering graph network by Markov Cluster Algorithm(MCL)",
+  "main": "mcl.js",
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee",
+    "prepublish": "node_modules/coffee-script/bin/coffee -c mcl.coffee"
+  },
+  "keywords": [
+    "mcl",
+    "markov",
+    "cluster",
+    "graph"
+  ],
+  "author": "nikezono",
+  "repository": "https://github.com/nikezono/mcl.git",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0",
+    "mocha": "^2.3.3"
+  }
+}
