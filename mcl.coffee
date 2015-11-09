@@ -23,6 +23,17 @@ this.MCL = class MCL
     @clustered = []
     @convergenced = false # is result homogeneous?
 
+  initializeWorkVariables: ->
+    @workNodes = []
+    @workEdges = {}
+    @graph = {}
+    @result = {}
+    @resultCache = {}
+    @loopCount = 0
+    @clustered = []
+    @convergenced = false
+
+
   addEdge: (node, targetNode)->
     @nodes.push node if not _.contains(@nodes, node)
     @nodes.push targetNode if not _.contains(@nodes, targetNode)
@@ -46,6 +57,8 @@ this.MCL = class MCL
     if not _.isEmpty(node) and not  _.contains(@nodes, node)
       throw new Error("there is no node named '#{node}'.")
 
+    @initializeWorkVariables()
+
     @setTargetSegment(node)
     @generateMatrix()
     @normalize()
@@ -57,7 +70,6 @@ this.MCL = class MCL
 
     @toFixedValues()
     @divideCluster()
-    @debug()
     @clustered
 
   setTargetSegment: (node)->

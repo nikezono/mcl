@@ -23,6 +23,17 @@ describe "mcl", ->
         clustered = mcl.clustering('alice')
         assert.deepEqual clustered, [ ['bob', 'carol'], ['hart'] ]
 
+      it "can also returns whole clustered node array", ->
+        mcl = new MCL
+        setTemplateEdges(mcl)
+        clustered = mcl.clustering('alice')
+        assert.deepEqual clustered, [ ['bob', 'carol'], ['hart'] ]
+
+        clustered = mcl.clustering()
+        assert.deepEqual clustered, [
+          [ 'alice', 'bob', 'carol', 'dave' ],
+          [ 'silva', 'nasri', 'toure', 'kun', 'hart']
+        ]
 
 setTemplateEdges = (mcl)->
   mcl.setEdge 'alice', 'bob', 1
