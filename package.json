@@ -1,11 +1,11 @@
 {
   "name": "markov-cluster",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "clustering graph network by Markov Cluster Algorithm(MCL)",
   "main": "mcl.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register test.coffee",
-    "prepublish": "node_modules/coffee-script/bin/coffee -c mcl.coffee"
+    "test": "mocha --compilers coffee:coffee-script/register test.coffee",
+    "prepublish": "coffee -c mcl.coffee"
   },
   "keywords": [
     "mcl",

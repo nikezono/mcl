@@ -7,13 +7,18 @@ this.MCL = class MCL
     @undirectedMode = option?.undirectedMode || true # WIP
     @expanses = option?.expanses || 2
     @inflates = option?.inflates || 2
-    @selfLoop = option?.selfLoop || false # WIP
+    @selfLoop = option?.selfLoop || true
 
     @nodes = [] # store all node's key
     @edges = {} # store all edges with weight
+
+    @workNodes = [] # target segmented nodes of graph
+    @workEdges = {} # target segmented Edges of graph
+
     @graph = {} # random-walk propability matrix with label
     @result = {}
     @resultCache = {}
+
     @loopCount = 0
     @clustered = []
     @convergenced = false # is result homogeneous?
@@ -38,7 +43,10 @@ this.MCL = class MCL
   # clustering graph network
   # @param node: segment target subgraph by single node
   clustering: (node)->
+    if not _.isEmpty(node) and not  _.contains(@nodes, node)
+      throw new Error("there is no node named '#{node}'.")
 
+    @setTargetSegment(node)
     @generateMatrix()
     @normalize()
 
@@ -52,24 +60,39 @@ this.MCL = class MCL
     @debug()
     @clustered
 
+  setTargetSegment: (node)->
+    if node
+      nodes = Object.keys(@edges[node])
+      nodes = nodes.filter (el)-> el isnt node # @todo change by selfLoop flag
+      edges = {}
+      nodes.forEach (subNode)=>
+        nodes.forEach (targetNode)=>
+          edges[subNode] ||= {}
+          edges[subNode][targetNode] = @edges[subNode][targetNode] || 0
+    else
+      nodes = @nodes
+      edges = @edges
 
-  getCluster: ->
-    @clustered
+    @workNodes = nodes
+    @workEdges = edges
 
   generateMatrix: ->
-    @nodes.forEach (node)=>
-      @nodes.forEach (targetNode)=>
-        @edges[targetNode] ||= {}
-        if not _.has(@edges[node], targetNode)
-          @edges[node][targetNode] = 0
 
-  normalize: (target)->
-    _.each @edges, (edges, node)=>
-      _.each edges, (cost, targetNode)=>
+    @workNodes.forEach (node)=>
+      @workNodes.forEach (targetNode)=>
+        @workEdges[targetNode] ||= {}
+        if not _.has(@workEdges[node], targetNode)
+          @workEdges[node][targetNode] = 0
+        if @selfLoop is true and node is targetNode
+          @workEdges[node][targetNode] = 1
+
+  normalize: ->
+    _.each @workEdges, (subEdges, node)=>
+      _.each subEdges, (cost, targetNode)=>
 
         # total cost of row
-        totalCost = _.reduce(_.values(@edges), (memo,edges)=>
-          memo+edges[targetNode]
+        totalCost = _.reduce(_.values(@workEdges), (memo,elm)->
+          memo+elm[targetNode]
         ,0)
 
         @graph[node] ||= {}
@@ -80,11 +103,11 @@ this.MCL = class MCL
     iterator = 0
     while(iterator < @expanses)
       result = {}
-      @nodes.forEach (row)=>
+      @workNodes.forEach (row)=>
         result[row] ||= {}
-        @nodes.forEach (col)=>
+        @workNodes.forEach (col)=>
           result[row][col] ||= 0
-          @nodes.forEach (i)=>
+          @workNodes.forEach (i)=>
             #debug "plus", "#{row}-#{i}", "#{i}-#{col}","to #{row}-#{col}", result[row][col], (@result[row][i] * @result[i][col])
             result[row][col] += (@result[row][i] * @graph[i][col])
 
@@ -97,9 +120,9 @@ this.MCL = class MCL
       result = {}
 
       # POW
-      @nodes.forEach (row)=>
+      @workNodes.forEach (row)=>
         result[row] ||= {}
-        @nodes.forEach (col)=>
+        @workNodes.forEach (col)=>
           result[row][col] = (@result[row][col] * @result[row][col])
 
       # NORMALIZE
@@ -125,28 +148,39 @@ this.MCL = class MCL
       @resultCache = @result
 
   toFixedValues: ->
-    @nodes.forEach (node)=>
-      @nodes.forEach (targetNode)=>
+    @workNodes.forEach (node)=>
+      @workNodes.forEach (targetNode)=>
         @result[node][targetNode] = @result[node][targetNode].toFixed(1) * 1
 
 
   divideCluster: ->
-    @nodes.forEach (node)=>
+    divided = []
+    @workNodes.forEach (node)=>
       subResult = []
-      @nodes.forEach (targetNode)=>
+      @workNodes.forEach (targetNode)=>
         if @result[node][targetNode] > 0
           subResult.push targetNode
+          divided.push targetNode
 
       # divide atractors
       if not _.isEmpty(subResult) and not _.contains(@clustered, subResult)
         @clustered.push subResult
 
+    _.difference(@workNodes, divided).forEach (node)=>
+      @clustered.push [node]
+
 
   debug: ->
+    debug "NODES"
+    debug @workNodes
+
+    debug "EDGES"
+    debug @workEdges
+
     debug "MATRIX"
-    debug @nodes.map (node)=>
-      @nodes.map (targetNode)=>
-        @edges[node][targetNode]
+    debug @workNodes.map (node)=>
+      @workNodes.map (targetNode)=>
+        @workEdges[node][targetNode]
 
     debug "NORMALIZED GRAPH"
     debug @graph
