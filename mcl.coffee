@@ -168,15 +168,20 @@ this.MCL = class MCL
   divideCluster: ->
     divided = []
     @workNodes.forEach (node)=>
-      subResult = []
+      subResult = {}
+
       @workNodes.forEach (targetNode)=>
-        if @result[node][targetNode] > 0
-          subResult.push targetNode
+        parameter = @result[node][targetNode]
+        if parameter > 0 and not _.contains(divided, targetNode)
+          subResult[parameter] ||= []
+          subResult[parameter].push targetNode
           divided.push targetNode
 
       # divide atractors
-      if not _.isEmpty(subResult) and not _.contains(@clustered, subResult)
-        @clustered.push subResult
+      if not _.isEmpty(subResult)
+        _.each subResult, (nodes, param)=>
+          if not _.contains(@clustered, nodes)
+            @clustered.push nodes
 
     _.difference(@workNodes, divided).forEach (node)=>
       @clustered.push [node]
