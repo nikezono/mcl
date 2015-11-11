@@ -1,4 +1,4 @@
-{ MCL } = require './mcl'
+{ MCL } = require './src/mcl'
 assert = require 'assert'
 
 describe "mcl", ->
@@ -12,8 +12,8 @@ describe "mcl", ->
         clustered = mcl.clustering()
 
         assert.deepEqual clustered, [
-          [ 'alice', 'bob', 'carol', 'dave' ],
-          [ 'silva', 'nasri', 'toure', 'kun', 'hart']
+          [ 'alice', 'bob', 'dave', 'carol' ],
+          [ 'silva', 'kun', 'nasri', 'toure', 'hart']
         ]
 
     context "with subgraph option", ->
@@ -21,18 +21,18 @@ describe "mcl", ->
         mcl = new MCL
         setTemplateEdges(mcl)
         clustered = mcl.clustering('alice')
-        assert.deepEqual clustered, [ ['bob', 'carol'], ['hart'] ]
+        assert.deepEqual clustered, [ [ 'hart' ], [ 'carol', 'bob' ]]
 
       it "can also returns whole clustered node array", ->
         mcl = new MCL
         setTemplateEdges(mcl)
         clustered = mcl.clustering('alice')
-        assert.deepEqual clustered, [ ['bob', 'carol'], ['hart'] ]
+        assert.deepEqual clustered, [ [ 'hart' ], [ 'carol', 'bob' ]]
 
         clustered = mcl.clustering()
         assert.deepEqual clustered, [
-          [ 'alice', 'bob', 'carol', 'dave' ],
-          [ 'silva', 'nasri', 'toure', 'kun', 'hart']
+          [ 'alice', 'bob', 'dave', 'carol' ],
+          [ 'silva', 'kun', 'nasri', 'toure', 'hart']
         ]
 
 setTemplateEdges = (mcl)->
@@ -48,5 +48,4 @@ setTemplateEdges = (mcl)->
   mcl.setEdge 'kun', 'silva', 3
   mcl.setEdge 'hart', 'toure', 5
   mcl.setEdge 'hart', 'alice', 1
-
 
