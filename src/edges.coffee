@@ -71,8 +71,9 @@ this.Edges = class Edges
 
   avarageDegrees: (nodes)->
     total = 0
-    _.each @edges, (edges, source)->
-      return if nodes.indexOf(source) is -1
-      total += _.reduce edges, (memo, cost)->
-        if cost > 0 then memo + 1 else memo
-    total / Object.keys(@edges).length
+    nodes.forEach (source)=>
+      _.each @edges[source], (cost, sink)=>
+        return if not _.contains nodes, sink
+        return if source is sink
+        total = total + 1 if cost > 0
+    total / nodes.length
