@@ -14,6 +14,7 @@ this.MCL = class MCL
     @pruning  = option?.pruning  || true
 
     @pruned = {}
+    @isolated = []
 
     @nodes = new Nodes()
     @edges = new Edges()
@@ -28,6 +29,7 @@ this.MCL = class MCL
 
   initializeWorkVariables: ->
     @pruned = {}
+    @isolated = []
     @workNodes = []
     @graph = {}
     @result = {}
@@ -59,6 +61,9 @@ this.MCL = class MCL
     if @pruning is true
       @pruned = @edges.getPendants(@workNodes)
       @workNodes = _.difference @workNodes, _.flatten(_.values(@pruned))
+
+    @isolated = @edges.getIsolated(@workNodes)
+    @workNodes = _.difference @workNodes, @isolated
 
     debug "working nodes: #{@workNodes.length}"
     debug "avarage degrees: #{@edges.avarageDegrees(@workNodes)}"
@@ -168,7 +173,7 @@ this.MCL = class MCL
           if not _.contains(@clustered, nodes)
             @clustered.push nodes
 
-    _.difference(@workNodes, divided).forEach (node)=>
+    @isolated.forEach (node)=>
       @clustered.push [node]
 
     # add circular pendant(1-1 nodes)
@@ -189,6 +194,9 @@ this.MCL = class MCL
 
     debug "PENDANTS"
     debug @pruned
+
+    debug "ISOLATED"
+    debug @isolated
 
     debug "RESULT"
     debug @result

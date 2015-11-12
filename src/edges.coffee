@@ -69,6 +69,17 @@ this.Edges = class Edges
         result[source][sink] = (@edges[source][sink] || 0)|0
     result
 
+  getIsolated: (nodes)->
+    result = []
+    nodes.forEach (source)=>
+      costed = []
+      _.each @edges[source], (cost, sink)->
+        return if nodes.indexOf(sink) is -1
+        return if source is sink
+        costed.push sink if cost > 0
+      result.push source if costed.length is 0
+    result
+
   avarageDegrees: (nodes)->
     total = 0
     nodes.forEach (source)=>
