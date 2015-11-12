@@ -32,7 +32,12 @@ this.Edges = class Edges
     if not @edges[source]
       return []
     else
-      Object.keys(@edges[source])
+      result = []
+      nodes = Object.keys(@edges[source])
+      nodes.forEach (sink)=>
+        result.push sink if @edges[source][sink] > 0
+      result
+
 
   setEmptyValues: (selfLoop = true)->
     nodes = Object.keys(@edges)

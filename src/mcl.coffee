@@ -55,6 +55,7 @@ this.MCL = class MCL
     @initializeWorkVariables()
 
     @workNodes = if node then @edges.getSinkNodes(node) else @nodes.all()
+    debug "all nodes: #{@workNodes.length}"
     if @pruning is true
       @pruned = @edges.getPendants(@workNodes)
       @workNodes = _.difference @workNodes, _.flatten(_.values(@pruned))

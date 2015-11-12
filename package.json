@@ -1,6 +1,6 @@
 {
   "name": "markov-cluster",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "clustering graph network by Markov Cluster Algorithm(MCL)",
   "main": "lib/mcl.js",
   "scripts": {
