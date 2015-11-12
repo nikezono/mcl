@@ -3,30 +3,29 @@ _ = require 'underscore'
 this.Nodes = class Nodes
 
   constructor: ->
-    @nodes = []
+    @nodes = {}
+    @id    = 0
 
   set: (name)->
     if not name
       return throw Error("empty value is given.")
     if @exists(name)
       return throw new Error("#{name} is already created node.")
-    @nodes.push name
+    @id += 1
+    @nodes[name] = @id
 
   upsert: (name)->
     return name if @exists(name)
     @set(name)
 
-  getIdByName: (name)->
-    @nodes.indexOf(name)
-
   size: ->
-    @nodes.length
+    Object.keys(@nodes).length
 
   exists: (name)->
-    _.contains(@nodes, name)
+    @nodes[name]?
 
   all: ->
-    return @nodes
+    return Object.keys(@nodes)
 
 
 
