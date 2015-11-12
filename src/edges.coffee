@@ -10,8 +10,8 @@ this.Edges = class Edges
 
   add: (source, sink)->
     if @exists(source, sink)
-      @edges[source][sink] += 1
-      @edges[sink][source] += 1
+      @edges[source][sink] = (@edges[source][sink] + 1)|0
+      @edges[sink][source] = (@edges[sink][source] + 1)|0
     else
       @set(source, sink, 1)
 
@@ -20,13 +20,13 @@ this.Edges = class Edges
       return throw Error("Invalid arguments. sourceId and sinkId is required.")
 
     if @exists(source, sink)
-      @edges[source][sink] = cost
-      @edges[sink][source] = cost
+      @edges[source][sink] = cost|0
+      @edges[sink][source] = cost|0
     else
       @edges[source] ||= {}
-      @edges[source][sink] = cost
+      @edges[source][sink] = cost|0
       @edges[sink] ||= {}
-      @edges[sink][source] = cost
+      @edges[sink][source] = cost|0
 
   getSinkNodes: (source)->
     if not @edges[source]
