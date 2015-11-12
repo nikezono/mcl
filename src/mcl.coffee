@@ -139,6 +139,13 @@ this.MCL = class MCL
 
   checkConvergence: ->
     @loopCount++
+    if @workNodes.length is 2 # already clustered
+      @convergenced = true
+      @workNodes.forEach (source)=>
+        @workNodes.forEach (sink)=>
+          @result[source][sink] = 0
+      @clustered.push @workNodes
+
     if _.isEqual @resultCache, @result
       @convergenced = true
     else

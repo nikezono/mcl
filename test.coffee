@@ -16,6 +16,13 @@ describe "mcl", ->
           [ 'silva', 'kun', 'nasri', 'toure', 'hart']
         ]
 
+      context "with two nodes", ->
+        it "returns clustered node array", ->
+          mcl = new MCL
+          mcl.setEdge 'alice', 'bob', 3
+          clustered = mcl.clustering()
+          assert.deepEqual clustered, [['bob', 'alice']]
+
     context "with subgraph option", ->
       it "returns segmented and clustered node array", ->
         mcl = new MCL
