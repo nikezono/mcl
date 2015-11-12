@@ -63,7 +63,7 @@ this.MCL = class MCL
     debug "working nodes: #{@workNodes.length}"
     debug "avarage degrees: #{@edges.avarageDegrees(@workNodes)}"
 
-    @edges.setEmptyValues(@selfLoop)
+    @edges.setSelfLoop(@workNodes) if @selfLoop
     @graph = @edges.generateMatrix(@workNodes)
 
     @normalize()

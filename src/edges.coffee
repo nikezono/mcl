@@ -39,15 +39,12 @@ this.Edges = class Edges
       result
 
 
-  setEmptyValues: (selfLoop = true)->
-    nodes = Object.keys(@edges)
+  setSelfLoop: (nodes)->
 
     nodes.forEach (source)=>
       nodes.forEach (sink)=>
-        if selfLoop and source is sink
+        if source is sink
           @edges[source][sink] ||= 1
-        else
-          @edges[source][sink] ||= 0
 
   getPendants: (nodes)->
 
@@ -69,7 +66,7 @@ this.Edges = class Edges
     nodes.forEach (source)=>
       nodes.forEach (sink)=>
         result[source] ||= {}
-        result[source][sink] = @edges[source][sink]
+        result[source][sink] = (@edges[source][sink] || 0)|0
     result
 
   avarageDegrees: (nodes)->
