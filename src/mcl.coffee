@@ -8,10 +8,11 @@ this.MCL = class MCL
 
   constructor: (option)->
     @undirectedMode = option?.undirectedMode || true # WIP
-    @expanses = option?.expanses || 2
-    @inflates = option?.inflates || 2
-    @selfLoop = option?.selfLoop || true
-    @pruning  = option?.pruning  || true
+    @expanses  = option?.expanses  || 2
+    @inflates  = option?.inflates  || 2
+    @selfLoop  = option?.selfLoop  || true
+    @pruning   = option?.pruning   || true
+    @loopLimit = option?.loopLimit || 100
 
     @pruned = {}
     @isolated = []
@@ -106,7 +107,7 @@ this.MCL = class MCL
           result[row][col] ||= 0
           @workNodes.forEach (i)=>
             #debug "plus", "#{row}-#{i}", "#{i}-#{col}","to #{row}-#{col}", result[row][col], (@result[row][i] * @result[i][col])
-            result[row][col] += (@result[row][i] * @graph[i][col])
+            result[row][col] += (@result[row][i] * @result[i][col])
 
       @result = result
       iterator++
@@ -146,7 +147,14 @@ this.MCL = class MCL
           @result[source][sink] = 0
       @clustered.push @workNodes
 
-    if _.isEqual @resultCache, @result
+    if @loopCount > @loopLimit # overclassification
+      @convergenced = true
+      @workNodes.forEach (source)=>
+        @workNodes.forEach (sink)=>
+          @result[source][sink] = 0
+      @clustered.push @workNodes
+
+    if _.isEqual @resultCache, @result # homogeneous
       @convergenced = true
     else
       @resultCache = @result
