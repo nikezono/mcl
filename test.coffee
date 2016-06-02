@@ -16,6 +16,27 @@ describe "mcl", ->
           [ 'silva', 'kun', 'nasri', 'toure', 'hart']
         ]
 
+      it "doesn't put the same node in 2 clusters", ->
+        mcl = new MCL
+        setTemplateEdges(mcl)
+        clustered = mcl.clustering()
+
+        for cluster, i in clustered
+          for otherCluster, j in clustered when i < j
+            for c in cluster
+              assert c not in otherCluster
+
+      it "doesn't put the same node in 2 clusters when using data that exposes this bug", ->
+        mcl = new MCL
+        setProblematicEdges(mcl)
+        clustered = mcl.clustering()
+
+        for cluster, i in clustered
+          for otherCluster, j in clustered when i < j
+            for c in cluster
+              assert c not in otherCluster, "#{c} is in [#{cluster}] and [#{otherCluster}]"
+
+
       context "with two nodes", ->
         it "returns clustered node array", ->
           mcl = new MCL
@@ -56,3 +77,6 @@ setTemplateEdges = (mcl)->
   mcl.setEdge 'hart', 'toure', 5
   mcl.setEdge 'hart', 'alice', 1
 
+setProblematicEdges = (mcl) ->
+  mcl.setEdge 'alice', 'bob',  1
+  mcl.setEdge 'alice', 'carol',  3
